@@ -31,7 +31,7 @@ Route::prefix('my-products')->name('my-products.')->group(function () {
         Route::get('/{product}/edit', [MemberProductController::class, 'edit'])->name('edit');
         // 【新增】更新商品
         Route::patch('/{product}', [MemberProductController::class, 'update'])->name('update');
-        //
+
         Route::delete('/{product}', [MemberProductController::class, 'destroy'])->name('destroy');
 
         // 回收筒功能
@@ -41,14 +41,16 @@ Route::prefix('my-products')->name('my-products.')->group(function () {
 
         // 切換上架/下架
         Route::patch('/{product}/toggle-status', [MemberProductController::class, 'toggleStatus'])->name('toggle-status');
+
+        require __DIR__.'/auth.php';
      });
 });
 
+        // 公開商品展示（訪客可看）
+        Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+
+        // 【新增】商品詳情頁
+        Route::get('/products/{product}', [ProductController::class, 'show'])->name('products.show');
 
 
-
-
-Route::get('/products', [ProductController::class, 'index'])
-    ->name('products.index');
-
-require __DIR__.'/auth.php';
+        require __DIR__.'/auth.php';
