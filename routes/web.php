@@ -5,6 +5,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProductController;
 // 【新增】引入會員商品 Controller，使用別名避免名稱衝突
 use App\Http\Controllers\Member\ProductController as MemberProductController;
+use App\Http\Controllers\CartController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -18,6 +19,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // 購物車功能
+    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+    Route::post('/cart/add/{product}', [CartController::class, 'add'])->name('cart.add');
+    Route::patch('/cart/{cart}', [CartController::class, 'update'])->name('cart.update');
+    Route::delete('/cart/{cart}', [CartController::class, 'remove'])->name('cart.remove');
 
     // 會員商品管理路由
 Route::prefix('my-products')->name('my-products.')->group(function () {
@@ -33,6 +40,7 @@ Route::prefix('my-products')->name('my-products.')->group(function () {
         Route::patch('/{product}', [MemberProductController::class, 'update'])->name('update');
 
         Route::delete('/{product}', [MemberProductController::class, 'destroy'])->name('destroy');
+        
 
         // 回收筒功能
         Route::get('/trashed', [MemberProductController::class, 'trashed'])->name('trashed');
@@ -41,8 +49,6 @@ Route::prefix('my-products')->name('my-products.')->group(function () {
 
         // 切換上架/下架
         Route::patch('/{product}/toggle-status', [MemberProductController::class, 'toggleStatus'])->name('toggle-status');
-
-        require __DIR__.'/auth.php';
      });
 });
 

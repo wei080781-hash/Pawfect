@@ -54,7 +54,9 @@
 
                     <!-- 加入購物車與購買 -->
                     <div class="mt-8">
-                        <div class="flex items-center gap-4 mb-4">
+                        <form action="{{ route('cart.add', $product->id) }}" method="POST">
+                            @csrf
+                            <div class="flex items-center gap-4 mb-4">
                              <label for="quantity" class="text-gray-700 font-medium">
                                 數量：
                             </label>
@@ -74,9 +76,9 @@
 
                 <div class="flex gap-4">
                     <button 
-            type="button"
-            class="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 disabled:bg-gray-400"
-            disabled
+            type="submit"
+            class="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 disabled:bg-gray-400" 
+                {{ $product->stock == 0 ? 'disabled' : '' }}
         >
             加入購物車
         </button>
