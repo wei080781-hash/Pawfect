@@ -25,4 +25,14 @@ class ProductController extends Controller
 
         return view('products.index', compact('products', 'filter'));
     }
+
+    public function show(Product $product)
+    {
+        // 只顯示已上架且未刪除的商品
+        if (!$product->is_active || $product->deleted_at) {
+            abort(404);
+        }
+
+        return view('products.show', compact('product'));
+    }
 }
