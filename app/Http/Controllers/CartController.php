@@ -23,6 +23,7 @@ class CartController extends Controller
         });
 
         return view('cart.index', compact('carts', 'total'));
+
     }
 
     /**
@@ -72,10 +73,15 @@ class CartController extends Controller
      * 更新購物車商品數量
      */
     public function update(Request $request, Cart $cart)
-    {
+    {   
+        
         $request->validate([
             'quantity' => 'required|integer|min:1',
         ]);
+
+        if ((int) $cart->user_id !== (int) Auth::id()) {
+            abort(403);
+        }
 
         $quantity = $request->input('quantity');
 
@@ -93,7 +99,11 @@ class CartController extends Controller
      * 從購物車移除商品
      */
     public function remove(Cart $cart)
-    {
+    {   
+        if ((int) $cart->user_id !== (int) Auth::id()) {
+            abort(403);
+        }
+        
         $cart->delete();
 
         return back()->with('success', '已從購物車移除');

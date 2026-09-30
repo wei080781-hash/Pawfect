@@ -1,11 +1,13 @@
 <?php
 
+
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProductController;
 // 【新增】引入會員商品 Controller，使用別名避免名稱衝突
 use App\Http\Controllers\Member\ProductController as MemberProductController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\CheckoutController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -26,6 +28,15 @@ Route::middleware('auth')->group(function () {
     Route::patch('/cart/{cart}', [CartController::class, 'update'])->name('cart.update');
     Route::delete('/cart/{cart}', [CartController::class, 'remove'])->name('cart.remove');
 
+    // 結帳入口
+    Route::get('/checkout', [CheckoutController::class, 'index'])
+           ->name('checkout.index');
+    
+    Route::post('/checkout', [CheckoutController::class, 'store'])
+    ->name('checkout.store');
+    
+        
+
     // 會員商品管理路由
 Route::prefix('my-products')->name('my-products.')->group(function () {
         // 【新增】我的商品列表
@@ -38,8 +49,9 @@ Route::prefix('my-products')->name('my-products.')->group(function () {
         Route::get('/{product}/edit', [MemberProductController::class, 'edit'])->name('edit');
         // 【新增】更新商品
         Route::patch('/{product}', [MemberProductController::class, 'update'])->name('update');
-
+        // 刪除商品
         Route::delete('/{product}', [MemberProductController::class, 'destroy'])->name('destroy');
+
         
 
         // 回收筒功能

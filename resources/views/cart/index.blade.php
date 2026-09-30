@@ -100,11 +100,14 @@
                                 </span>
                             </div>
 
-                            <!-- 結帳按鈕（尚未實作） -->
+                            <!-- 前往結帳 -->
                             <div class="mt-4 text-right">
-                                <button class="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 disabled:bg-gray-400" disabled>
-                                    前往結帳（尚未實作）
-                                </button>
+                                <a
+                                    href="{{ route('checkout.index') }}"
+                                    class="inline-block bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700"
+                                >
+                                    前往結帳
+                                </a>
                             </div>
                         </div>
                     </div>
