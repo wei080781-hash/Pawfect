@@ -9,10 +9,13 @@ use App\Http\Controllers\Member\ProductController as MemberProductController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\HomeController;
 
-Route::get('/', function () {
-    return view('home');
-})->name('home');
+Route::get('/', [HomeController::class, 'index']) ->name('home');
+
+Route::get('/categories', function () {
+    return view('categories.index');
+})->name('categories.index');
 
 Route::get('/dashboard', function () {
     return view('dashboard');
