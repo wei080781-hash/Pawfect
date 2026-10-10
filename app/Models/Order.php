@@ -13,6 +13,7 @@ class Order extends Model
 
     protected $fillable = [
         'user_id',
+        'seller_id',
         'status',
         'total_amount',
     ];
@@ -24,11 +25,19 @@ class Order extends Model
         ];
     }
 
+    // 下單的買家
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    // 負責這筆訂單的賣家
+    public function seller(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'seller_id');
+    }
+
+    // 訂單商品明細
     public function items(): HasMany
     {
         return $this->hasMany(OrderItem::class);

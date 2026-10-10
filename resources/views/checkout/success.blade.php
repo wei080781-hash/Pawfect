@@ -1,3 +1,4 @@
+
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
@@ -18,22 +19,33 @@
                             感謝你的購買，訂單已成功建立。
                         </p>
 
-                        <div class="border-t border-gray-200 pt-4 text-left">
-                            <p class="mb-2">
-                                <span class="font-semibold">訂單編號：</span>
-                                {{ $order->id }}
-                            </p>
+                        @foreach ($orders as $order)
+                            <div class="border-t border-gray-200 py-4 text-left">
+                                <h3 class="font-bold text-lg mb-3">
+                                    訂單 #{{ $order->id }}
+                                </h3>
 
-                            <p class="mb-2">
-                                <span class="font-semibold">訂單狀態：</span>
-                                {{ $order->status }}
-                            </p>
+                                <p class="mb-2">
+                                    <span class="font-semibold">訂單編號：</span>
+                                    {{ $order->id }}
+                                </p>
 
-                            <p>
-                                <span class="font-semibold">訂單總額：</span>
-                                {{ number_format((float) $order->total_amount, 2) }}
-                            </p>
-                        </div>
+                                <p class="mb-2">
+                                    <span class="font-semibold">賣家：</span>
+                                    {{ $order->seller?->name ?? '未知' }}
+                                </p>
+
+                                <p class="mb-2">
+                                    <span class="font-semibold">訂單狀態：</span>
+                                    {{ $order->status }}
+                                </p>
+
+                                <p>
+                                    <span class="font-semibold">訂單總額：</span>
+                                    {{ number_format((float) $order->total_amount, 2) }}
+                                </p>
+                            </div>
+                        @endforeach
 
                         <div class="mt-6 flex justify-center gap-4">
                             <a href="{{ route('products.index') }}"
@@ -41,9 +53,9 @@
                                 繼續購物
                             </a>
 
-                            <a href="{{ route('dashboard') }}"
+                            <a href="{{ route('orders.index') }}"
                                 class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700">
-                                 回到首頁
+                                查看我的訂單
                             </a>
                         </div>
                     </div>
@@ -51,4 +63,4 @@
             </div>
         </div>
     </div>
-</x-app-layout>   
+</x-app-layout>
