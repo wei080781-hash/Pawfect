@@ -41,6 +41,12 @@
 
             <div class="flex gap-2">
 
+                {{-- 賣家訂單 --}}
+                <a href="{{ route('seller.orders.index') }}"
+                    class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                    賣家訂單
+                </a>
+
                 {{-- 回收筒連結 --}}
                 <a href="{{ route('my-products.trashed') }}"
                     class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">

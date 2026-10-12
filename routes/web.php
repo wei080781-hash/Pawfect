@@ -39,12 +39,15 @@ Route::middleware('auth')->group(function () {
     Route::post('/checkout', [CheckoutController::class, 'store'])
     ->name('checkout.store');
     
-    // 訂單功能
+    // 買家訂單功能
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
     Route::post('/orders/{order}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
-        
 
+    // 賣家訂單列表
+    Route::get('/seller/orders', [OrderController::class, 'sellerIndex'])
+        ->name('seller.orders.index');
+        
     // 會員商品管理路由
 Route::prefix('my-products')->name('my-products.')->group(function () {
         // 【新增】我的商品列表

@@ -9,21 +9,41 @@ use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
 {
+
     /**
      * 顯示購物車頁面
      */
     public function index()
     {
-        $carts = Cart::with('product')
+        $carts = Cart::with('product.user')
             ->where('user_id', Auth::id())
             ->get();
 
-        $total = $carts->sum(function ($cart) {
-            return $cart->product->price * $cart->quantity;
+        $hasInvalidItems = $carts->contains(function ($cart) {
+            $product = $cart->product;
+
+            return !$product
+                || !$product->is_active
+                || $product->stock < 1
+                || $cart->quantity < 1
+                || $cart->quantity > $product->stock;
         });
 
-        return view('cart.index', compact('carts', 'total'));
+        $total = $carts->sum(function ($cart) {
+            $product = $cart->product;
 
+            if (!$product) {
+                return 0;
+            }
+
+            return $product->price * $cart->quantity;
+        });
+
+        return view('cart.index', compact(
+            'carts',
+            'total',
+            'hasInvalidItems'
+        ));
     }
 
     /**
@@ -36,6 +56,22 @@ class CartController extends Controller
         ]);
 
         $quantity = $request->input('quantity', 1);
+
+        // 檢查商品是否仍可購買
+        if (!$product->is_active || $product->deleted_at !== null) {
+            return back()->with(
+                'error',
+                '此商品已下架或刪除，無法加入購物車。'
+            );
+        }
+
+        // 檢查賣家是否仍存在
+        if (!$product->user_id || !$product->user()->exists()) {
+            return back()->with(
+                'error',
+                '此商品已無有效賣家，無法加入購物車。'
+            );
+        }
 
         // 檢查庫存
         if ($product->stock < $quantity) {
@@ -50,7 +86,7 @@ class CartController extends Controller
         if ($cart) {
             // 更新數量
             $newQuantity = $cart->quantity + $quantity;
-            
+
             // 再次檢查庫存
             if ($product->stock < $newQuantity) {
                 return back()->with('error', '庫存不足');
@@ -69,13 +105,13 @@ class CartController extends Controller
         return back()->with('success', '已加入購物車');
     }
 
+
     /**
      * 更新購物車商品數量
      */
     public function update(Request $request, Cart $cart)
-    {   
-        
-        $request->validate([
+    {
+        $validated = $request->validate([
             'quantity' => 'required|integer|min:1',
         ]);
 
@@ -83,14 +119,21 @@ class CartController extends Controller
             abort(403);
         }
 
-        $quantity = $request->input('quantity');
+        $product = $cart->product;
+
+        if (!$product) {
+            return back()->with('error', '商品已不存在或已刪除');
+        }
 
         // 檢查庫存
-        if ($cart->product->stock < $quantity) {
+        if ($product->stock < $validated['quantity']) {
             return back()->with('error', '庫存不足');
         }
 
-        $cart->update(['quantity' => $quantity]);
+        // 更新購物車數量
+        $cart->update([
+            'quantity' => $validated['quantity'],
+        ]);
 
         return back()->with('success', '已更新數量');
     }
@@ -99,11 +142,11 @@ class CartController extends Controller
      * 從購物車移除商品
      */
     public function remove(Cart $cart)
-    {   
+    {
         if ((int) $cart->user_id !== (int) Auth::id()) {
             abort(403);
         }
-        
+
         $cart->delete();
 
         return back()->with('success', '已從購物車移除');
