@@ -30,12 +30,6 @@
                             });
                         @endphp
 
-                        @if($hasInvalidItems)
-                            <div class="bg-yellow-100 border border-yellow-400 text-yellow-800 px-4 py-3 rounded mb-4">
-                                購物車中有商品已下架、已刪除或庫存不足。這些商品會保留在購物車中，但必須先處理異常商品才能結帳。
-                            </div>
-                        @endif
-
                         <div class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-gray-200">
                                 <thead class="bg-gray-50">
@@ -63,17 +57,17 @@
                                             <td class="px-6 py-4">
                                                 @if(!$product)
                                                     <span class="text-red-600">
-                                                        商品已不存在或已刪除
+                                                        無商品了
                                                     </span>
                                                 @elseif(!$product->is_active)
                                                     <span class="text-red-600">
-                                                        {{ $product->name }}（已下架）
+                                                        商品下架
                                                     </span>
                                                 @else
                                                     <a href="{{ route('products.show', $product) }}" class="text-indigo-600 hover:text-indigo-900">
                                                         {{ $product->name }}
                                                     </a>
-
+                                            
                                                     <p class="mt-1 text-sm text-gray-500">
                                                         賣家：{{ $product->user?->name ?? '未知賣家' }}
                                                     </p>
@@ -109,15 +103,9 @@
                                                 @else
                                                     {{ $cart->quantity }}
                                                 @endif
-
-
-                                                @if($product && $product->is_active && $product->stock < 1)
+                                                @if($product && $product->is_active && $cart->quantity > $product->stock)
                                                     <p class="text-sm text-red-600 mt-1">
-                                                        商品缺貨，目前庫存：{{ $product->stock }}
-                                                    </p>
-                                                @elseif($product && $product->is_active && $cart->quantity > $product->stock)
-                                                    <p class="text-sm text-red-600 mt-1">
-                                                        庫存不足，目前庫存：{{ $product->stock }}
+                                                        庫存不足
                                                     </p>
                                                 @endif
                                             </td>
