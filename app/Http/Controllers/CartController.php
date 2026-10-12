@@ -57,6 +57,22 @@ class CartController extends Controller
 
         $quantity = $request->input('quantity', 1);
 
+        // 檢查商品是否仍可購買
+        if (!$product->is_active || $product->deleted_at !== null) {
+            return back()->with(
+                'error',
+                '此商品已下架或刪除，無法加入購物車。'
+            );
+        }
+
+        // 檢查賣家是否仍存在
+        if (!$product->user_id || !$product->user()->exists()) {
+            return back()->with(
+                'error',
+                '此商品已無有效賣家，無法加入購物車。'
+            );
+        }
+
         // 檢查庫存
         if ($product->stock < $quantity) {
             return back()->with('error', '庫存不足');

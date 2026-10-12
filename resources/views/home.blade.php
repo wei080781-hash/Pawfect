@@ -485,6 +485,23 @@
                     新增產品
                 </span>
             </a>
+
+            
+            <!-- 賣家訂單 -->
+            <a
+                href="{{ route('seller.orders.index') }}"
+                class="flex items-center gap-3 px-5 py-4 text-gray-800 hover:bg-gray-50 transition"
+            >
+                <span class="text-lg">
+                    📋
+                </span>
+
+                <span class="text-sm">
+                    賣家訂單
+                </span>
+            </a>
+
+
             <!-- 登出 -->
             <form
                 method="POST"

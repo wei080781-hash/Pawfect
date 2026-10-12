@@ -24,6 +24,21 @@ class OrderController extends Controller
         return view('orders.index', compact('orders'));
     }
 
+    
+    /**
+     * 賣家訂單列表
+     */
+    public function sellerIndex(): View
+    {
+        $orders = Auth::user()->sellerOrders()
+            ->with(['user', 'items'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+
+        return view('seller.orders.index', compact('orders'));
+    }
+    
+
     /**
      * 訂單詳情頁面
      * GET /orders/{order}

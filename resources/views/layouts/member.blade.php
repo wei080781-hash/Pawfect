@@ -131,6 +131,21 @@
 
                     </a>
 
+                    <!-- 賣家訂單 -->
+                    <a href="{{ route('seller.orders.index') }}"
+                       class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 transition
+                         {{ request()->routeIs('seller.orders.*') ? 'bg-gray-100 font-semibold text-gray-900' : '' }}" >
+
+                        <span class="text-lg">
+                            📋
+                        </span>
+
+                        <span class="member-sidebar-text whitespace-nowrap">
+                            賣家訂單
+                        </span>
+
+                    </a>
+
 
                     <!-- 回收桶 -->
 
@@ -149,7 +164,6 @@
                         </span>
 
                     </a>
-
 
                     <!-- 登出 -->
 

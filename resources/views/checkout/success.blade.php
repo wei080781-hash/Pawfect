@@ -32,7 +32,7 @@
 
                                 <p class="mb-2">
                                     <span class="font-semibold">賣家：</span>
-                                    {{ $order->seller?->name ?? '未知' }}
+                                    {{ $order->seller_name ?? $order->seller?->name ?? '未知' }}
                                 </p>
 
                                 <p class="mb-2">

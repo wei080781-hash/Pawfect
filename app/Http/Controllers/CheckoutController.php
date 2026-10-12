@@ -101,6 +101,12 @@ class CheckoutController extends Controller
                         );
                     }
 
+                    if (!$product->user_id) {
+                        throw new \RuntimeException(
+                            "商品「{$product->name}」已無有效賣家，無法結帳。"
+                        );
+                    }
+
                     if ($cart->quantity < 1) {
                         throw new \RuntimeException(
                             "商品「{$product->name}」的購買數量無效，請返回購物車調整。"
@@ -141,8 +147,16 @@ class CheckoutController extends Controller
                 foreach ($itemsBySeller as $sellerId => $sellerItems) {
                     $totalAmount = $sellerItems->sum('subtotal');
 
+                    $seller = \App\Models\User::find($sellerId);
+
+                    if (!$seller) {
+                        throw new \RuntimeException('賣家帳號不存在，無法建立訂單。');
+                    }
+
                     $order = $user->orders()->create([
-                        'seller_id' => $sellerId,
+                        'buyer_name' => $user->name,
+                        'seller_id' => $seller->id,
+                        'seller_name' => $seller->name,
                         'status' => 'pending',
                         'total_amount' => $totalAmount,
                     ]);

@@ -21,6 +21,14 @@
                             <span>{{ $order->created_at->format('Y-m-d H:i') }}</span>
                         </div>
                         <div>
+                            <span class="font-medium">買家：</span>
+                            <span>{{ $order->buyer_name ?? $order->user?->name ?? '未知買家' }}</span>
+                        </div>
+                        <div>
+                            <span class="font-medium">賣家：</span>
+                            <span>{{ $order->seller_name ?? $order->seller?->name ?? '未知賣家' }}</span>
+                        </div>
+                        <div>
                             <span class="font-medium">訂單狀態：</span>
                             <span>{{ $order->status }}</span>
                         </div>
