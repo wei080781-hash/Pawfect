@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Member;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\ProductMedia;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -43,25 +46,105 @@ class ProductController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+    
     public function store(Request $request)
     {
-        // 驗證表單資料
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
             'description' => 'nullable|string',
-            'is_active' => 'boolean',
+            'introduction' => 'nullable|string',
+            'images' => 'required|array|min:3|max:6',
+            'images.*' => 'required|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'video' => 'nullable|file|mimes:mp4|max:102400',
+        ], [
+            'images.required' => '請至少上傳 3 張商品圖片。',
+            'images.min' => '商品圖片至少需要 3 張。',
+            'images.max' => '商品圖片最多只能上傳 6 張。',
+            'images.*.image' => '商品圖片必須是有效的圖片檔案。',
+            'images.*.mimes' => '商品圖片僅支援 JPG、PNG、WebP 格式。',
+            'images.*.max' => '單張商品圖片不可超過 5 MB。',
+            'video.mimes' => '商品影片僅支援 MP4 格式。',
+            'video.max' => '商品影片不可超過 100 MB。',
         ]);
-
-        // 建立商品（預設下架）
+    
         $user = auth()->user();
-        $user->products()->create($validated);
-
-        // 導向回商品列表
-        return redirect()->route('my-products.index')
-        ->with('success', '商品建立成功！');
+        $storedPaths = [];
+    
+        try {
+            DB::transaction(function () use (
+                $user,
+                $validated,
+                $request,
+                &$storedPaths
+            ) {
+                $product = $user->products()->create([
+                    'name' => $validated['name'],
+                    'price' => $validated['price'],
+                    'stock' => $validated['stock'],
+                    'description' => $validated['description'] ?? null,
+                    'introduction' => $validated['introduction'] ?? null,
+                    'is_active' => false,
+                ]);
+    
+                foreach ($request->file('images', []) as $index => $image) {
+                    $path = $image->store(
+                        'products/' . $product->id . '/images',
+                        'public'
+                    );
+    
+                    if ($path === false) {
+                        throw new \RuntimeException('商品圖片儲存失敗。');
+                    }
+    
+                    $storedPaths[] = $path;
+    
+                    $product->media()->create([
+                        'type' => 'image',
+                        'path' => $path,
+                        'sort_order' => $index,
+                    ]);
+                }
+    
+                if ($request->hasFile('video')) {
+                    $video = $request->file('video');
+    
+                    $path = $video->store(
+                        'products/' . $product->id . '/videos',
+                        'public'
+                    );
+    
+                    if ($path === false) {
+                        throw new \RuntimeException('商品影片儲存失敗。');
+                    }
+    
+                    $storedPaths[] = $path;
+    
+                    $product->media()->create([
+                        'type' => 'video',
+                        'path' => $path,
+                        'sort_order' => 0,
+                    ]);
+                }
+            });
+        } catch (\Throwable $exception) {
+            Storage::disk('public')->delete($storedPaths);
+    
+            report($exception);
+    
+            return back()
+                ->withInput($request->except(['images', 'video']))
+                ->withErrors([
+                    'images' => '商品建立或媒體儲存失敗，請確認儲存空間後再試。',
+                ]);
+        }
+    
+        return redirect()
+            ->route('my-products.index')
+            ->with('success', '商品建立成功！');
     }
+
 
     /**
      * Display the specified resource.

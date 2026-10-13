@@ -161,9 +161,10 @@
             </button>
 
 
+            
             <!-- 購物車 -->
-            <button
-                type="button"
+            <a
+                href="{{ route('cart.index') }}"
                 class="flex flex-col items-center justify-center gap-1 text-gray-600 hover:text-gray-900"
             >
                 <svg
@@ -183,7 +184,8 @@
                 <span class="text-xs">
                     購物車
                 </span>
-            </button>
+            </a>
+
 
 
             <!-- 登入 -->

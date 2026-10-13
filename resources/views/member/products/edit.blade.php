@@ -10,7 +10,7 @@
             編輯商品
         </h2>
 
-        <form action="{{ route('my-products.update', $product->id) }}" method="POST">
+        <form action="{{ route('my-products.update', $product->id) }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PATCH')
 
@@ -39,13 +39,10 @@
                 @enderror
             </div>
 
-            {{-- 商品描述 --}}
+            {{-- 商品規格 --}}
             <div class="mb-4">
-                <label
-                    for="description"
-                    class="block text-sm font-medium text-gray-700"
-                >
-                    商品描述
+                <label for="description" class="block text-sm font-medium text-gray-700">
+                    商品規格
                 </label>
 
                 <textarea
@@ -56,9 +53,76 @@
                 >{{ old('description', $product->description) }}</textarea>
 
                 @error('description')
-                    <p class="text-red-500 text-sm mt-1">
-                        {{ $message }}
-                    </p>
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+
+            {{-- 商品介紹文字 --}}
+            <div class="mb-4">
+                <label for="introduction" class="block text-sm font-medium text-gray-700">
+                    商品介紹文字
+                </label>
+
+                <textarea
+                    name="introduction"
+                    id="introduction"
+                    rows="5"
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm @error('introduction') border-red-500 @enderror"
+                >{{ old('introduction', $product->introduction) }}</textarea>
+
+                @error('introduction')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+
+            {{-- 新增商品圖片 --}}
+            <div class="mb-4">
+                <label for="images" class="block text-sm font-medium text-gray-700">
+                    新增商品圖片（最多 6 張）
+                </label>
+
+                <input
+                    type="file"
+                    name="images[]"
+                    id="images"
+                    accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                    multiple
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm @error('images') border-red-500 @enderror @error('images.*') border-red-500 @enderror"
+                >
+
+                <p class="text-sm text-gray-500 mt-1">
+                    支援 JPG、PNG、WebP。選取新圖片時，原有圖片的保留與移除將由後端功能處理。
+                </p>
+
+                @error('images')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
+
+                @error('images.*')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+
+            {{-- 新增或替換商品影片 --}}
+            <div class="mb-4">
+                <label for="video" class="block text-sm font-medium text-gray-700">
+                    新增或替換商品影片（最多 1 部，單檔上限 100 MB）
+                </label>
+
+                <input
+                    type="file"
+                    name="video"
+                    id="video"
+                    accept=".mp4,video/mp4"
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm @error('video') border-red-500 @enderror"
+                >
+
+                <p class="text-sm text-gray-500 mt-1">
+                    支援 MP4。不選擇新影片時，預期保留原有影片。
+                </p>
+
+                @error('video')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                 @enderror
             </div>
 
