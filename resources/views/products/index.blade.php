@@ -54,4 +54,7 @@
         </a>
     </article>
 </template>
+
+@include('layouts.partials.bottom-navigation')
+
 </x-app-layout>
