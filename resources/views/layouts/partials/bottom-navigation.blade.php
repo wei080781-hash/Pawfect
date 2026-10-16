@@ -613,10 +613,36 @@
             </button>
         </div>
 
-        <div class="p-5">
-            <p class="text-sm text-gray-500">
-                分類選項將於下一階段接入。
-            </p>
+
+        <div class="p-3 space-y-1">
+            <a
+                href="{{ route('products.index') }}"
+                class="block rounded-lg px-4 py-3 text-sm font-medium text-gray-800 hover:bg-gray-100"
+            >
+                商場
+            </a>
+
+            <a
+                href="{{ route('products.index', ['animal' => 'dogs']) }}"
+                class="block rounded-lg px-4 py-3 text-sm text-gray-700 hover:bg-gray-100"
+            >
+                狗狗專區
+            </a>
+
+            <a
+                href="{{ route('products.index', ['animal' => 'cats']) }}"
+                class="block rounded-lg px-4 py-3 text-sm text-gray-700 hover:bg-gray-100"
+            >
+                貓貓專區
+            </a>
+
+            <a
+                href="{{ route('products.index', ['animal' => 'other-animals']) }}"
+                class="block rounded-lg px-4 py-3 text-sm text-gray-700 hover:bg-gray-100"
+            >
+                其他動物專區
+            </a>
         </div>
+
     </div>
 </div>

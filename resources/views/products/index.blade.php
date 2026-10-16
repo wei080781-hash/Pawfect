@@ -3,7 +3,30 @@
                 {{-- 商品內容區域 --}}
         <section id="product-content" aria-live="polite">
             {{-- 全部商品 --}}
-            <div data-animal-section="all">
+        <div data-animal-section="all">
+            @if ($animal)
+                {{-- 指定動物專區 --}}
+                <h2 class="mb-4 text-xl font-bold text-gray-800">
+                    {{ $animal->name }}專區
+                </h2>
+
+                @include('products.partials.product-grid', [
+                    'sectionProducts' => $latestProducts,
+                ])
+
+                @foreach ($sections as $categorySection)
+                    <section class="mt-8">
+                        <h3 class="mb-4 text-lg font-semibold text-gray-800">
+                            {{ $categorySection['category']->name }}
+                        </h3>
+
+                        @include('products.partials.product-grid', [
+                            'sectionProducts' => $categorySection['products'],
+                        ])
+                    </section>
+                @endforeach
+            @else
+                {{-- 商場：顯示全部動物專區 --}}
                 <h2 class="mb-4 text-xl font-bold text-gray-800">
                     新品上市
                 </h2>
@@ -35,9 +58,8 @@
                         @endforeach
                     </section>
                 @endforeach
-            </div>
-        </section>
-    </div>
+            @endif
+        </div>
 
 {{-- 商品卡片元件 --}}
 <template id="product-card-template">
