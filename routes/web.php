@@ -13,9 +13,9 @@ use App\Http\Controllers\HomeController;
 
 Route::get('/', [HomeController::class, 'index']) ->name('home');
 
-Route::get('/categories', function () {
-    return view('categories.index');
-})->name('categories.index');
+Route::get('/about', function () {
+    return view('pages.about');
+})->name('about');
 
 Route::get('/dashboard', function () {
     return view('dashboard');

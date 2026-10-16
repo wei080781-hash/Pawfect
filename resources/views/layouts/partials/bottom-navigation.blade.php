@@ -615,6 +615,15 @@
 
 
         <div class="p-3 space-y-1">
+            {{-- 首頁 --}}
+            <a
+                href="{{ route('home') }}"
+                class="block rounded-lg px-4 py-3 text-sm font-medium text-gray-800 hover:bg-gray-100"
+            >
+                首頁
+            </a>
+
+            {{-- 商場 --}}
             <a
                 href="{{ route('products.index') }}"
                 class="block rounded-lg px-4 py-3 text-sm font-medium text-gray-800 hover:bg-gray-100"
@@ -622,6 +631,8 @@
                 商場
             </a>
 
+
+            {{-- 狗狗專區 --}}
             <a
                 href="{{ route('products.index', ['animal' => 'dogs']) }}"
                 class="block rounded-lg px-4 py-3 text-sm text-gray-700 hover:bg-gray-100"
@@ -629,6 +640,7 @@
                 狗狗專區
             </a>
 
+            {{-- 貓貓專區 --}}
             <a
                 href="{{ route('products.index', ['animal' => 'cats']) }}"
                 class="block rounded-lg px-4 py-3 text-sm text-gray-700 hover:bg-gray-100"
@@ -636,11 +648,20 @@
                 貓貓專區
             </a>
 
+            {{-- 其他動物專區 --}}
             <a
                 href="{{ route('products.index', ['animal' => 'other-animals']) }}"
                 class="block rounded-lg px-4 py-3 text-sm text-gray-700 hover:bg-gray-100"
             >
                 其他動物專區
+            </a>
+
+            {{-- 關於我們 --}}
+            <a
+                href="{{ route('about') }}"
+                class="block rounded-lg px-4 py-3 text-sm font-medium text-gray-800 hover:bg-gray-100"
+            >
+                關於我們
             </a>
         </div>
 
