@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\ProductLike;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
@@ -40,6 +41,7 @@ public function index(Request $request)
         $products = (clone $baseQuery)
             ->where('category_id', $selectedCategory->id)
             ->with(['category', 'media'])
+            ->withCount('likes')
             ->orderByDesc('created_at')
             ->orderByDesc('id')
             ->paginate(6)
@@ -72,6 +74,7 @@ public function index(Request $request)
     // 取得最新上架商品。
     $latestProducts = (clone $baseQuery)
         ->with(['category', 'media'])
+        ->withCount('likes')
         ->orderByDesc('created_at')
         ->orderByDesc('id')
         ->limit(4)
@@ -84,6 +87,7 @@ public function index(Request $request)
         $animalProducts = (clone $baseQuery)
             ->whereIn('category_id', $categoryIds)
             ->with(['category', 'media'])
+            ->withCount('likes')
             ->orderByDesc('created_at')
             ->orderByDesc('id')
             ->get();
@@ -93,6 +97,7 @@ public function index(Request $request)
                 $products = (clone $baseQuery)
                     ->where('category_id', $category->id)
                     ->with(['category', 'media'])
+                    ->withCount('likes')
                     ->orderByDesc('created_at')
                     ->orderByDesc('id')
                     ->limit(4)
@@ -115,6 +120,7 @@ public function index(Request $request)
     // 保留原有的 $products 分頁資料，避免其他既有功能失效。
     $products = (clone $baseQuery)
         ->with(['category', 'media'])
+        ->withCount('likes')
         ->orderByDesc('created_at')
         ->orderByDesc('id')
         ->paginate(20)
@@ -138,6 +144,7 @@ public function index(Request $request)
         $products = (clone $baseQuery)
             ->whereIn('category_id', $animal->children->pluck('id'))
             ->with(['category', 'media'])
+            ->withCount('likes')
             ->orderByDesc('created_at')
             ->orderByDesc('id')
             ->paginate(20)
@@ -146,6 +153,7 @@ public function index(Request $request)
         $latestProducts = (clone $baseQuery)
             ->whereIn('category_id', $animal->children->pluck('id'))
             ->with(['category', 'media'])
+            ->withCount('likes')
             ->orderByDesc('created_at')
             ->orderByDesc('id')
             ->limit(4)
@@ -165,8 +173,8 @@ public function index(Request $request)
 
 
     /**
-     * 顯示單一商品詳情。
-     */
+        * 顯示單一商品詳情。
+    */
     public function show(Product $product)
     {
         if (!$product->is_active || $product->deleted_at) {
@@ -174,7 +182,45 @@ public function index(Request $request)
         }
 
         $product->load(['media', 'category']);
+        $product->loadCount('likes');
 
-        return view('products.show', compact('product'));
+        $isLiked = auth()->check()
+            ? $product->likes()
+                ->where('user_id', auth()->id())
+                ->exists()
+            : false;
+
+        return view('products.show', compact('product', 'isLiked'));
+    }
+
+    /**
+        * 切換商品的點讚狀態。
+    */
+    public function toggleLike(Product $product)
+    {
+        // 不允許對未上架或已刪除的商品點讚。
+        if (!$product->is_active || $product->deleted_at) {
+            abort(404);
+        }
+
+        $userId = auth()->id();
+
+        // 已點讚就取消，尚未點讚就新增。
+        $like = ProductLike::where('user_id', $userId)
+            ->where('product_id', $product->id)
+            ->first();
+
+        if ($like) {
+            $like->delete();
+
+            return back()->with('success', '已取消點讚。');
+        }
+
+        ProductLike::create([
+            'user_id' => $userId,
+            'product_id' => $product->id,
+        ]);
+
+        return back()->with('success', '點讚成功。');
     }
 }

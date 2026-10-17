@@ -35,6 +35,11 @@
                 <p class="px-2 pb-4 text-center text-sm font-bold text-rose-600">
                     NT$ {{ number_format((float) $product->price, 0) }}
                 </p>
+
+                <p class="px-2 pb-4 text-center text-xs text-gray-500">
+                    ♥ {{ $product->likes_count ?? 0 }} 個讚
+                </p>
+
             </a>
         </article>
     @empty
