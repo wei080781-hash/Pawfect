@@ -33,7 +33,32 @@
                     <h1 class="text-3xl font-bold text-gray-900 mb-4">
                         {{ $product->name }}
                     </h1>
+                {{-- 商品點讚資訊 --}}
+                <div class="flex flex-wrap items-center gap-3 mb-6">
+                    <span class="text-gray-700">
+                        ❤️ 點讚數：{{ $product->likes_count }}
+                    </span>
 
+                    @auth
+                        <form action="{{ route('products.toggleLike', $product->id) }}" method="POST">
+                            @csrf
+
+                            <button
+                                type="submit"
+                                class="px-4 py-2 rounded-lg text-white {{ $isLiked ? 'bg-gray-500 hover:bg-gray-600' : 'bg-pink-600 hover:bg-pink-700' }}"
+                            >
+                                {{ $isLiked ? '取消點讚' : '點讚' }}
+                            </button>
+                        </form>
+                    @else
+                        <a href="{{ route('login') }}"
+                           class="text-indigo-600 hover:text-indigo-800 underline">
+                            登入後即可點讚
+                        </a>
+                    @endauth
+                </div>
+                
+                {{-- 商品價格與庫存 --}}
                     <div class="flex flex-wrap items-baseline gap-4 mb-6">
                         <span class="text-4xl font-bold text-indigo-600">
                             ${{ number_format($product->price, 2) }}

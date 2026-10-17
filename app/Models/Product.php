@@ -52,4 +52,12 @@ class Product extends Model
     {
         return $this->hasMany(ProductMedia::class)->orderBy('sort_order');
     }
+
+    /**
+    * 商品的點讚紀錄。
+    */
+    public function likes(): HasMany
+    {
+        return $this->hasMany(ProductLike::class);
+    }
 }

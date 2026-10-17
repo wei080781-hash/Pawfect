@@ -26,6 +26,10 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    // 商品點讚與取消點讚（限登入會員）
+    Route::post('/products/{product}/like', [ProductController::class, 'toggleLike'])
+        ->name('products.toggleLike');
+
     // 購物車功能
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
     Route::post('/cart/add/{product}', [CartController::class, 'add'])->name('cart.add');
