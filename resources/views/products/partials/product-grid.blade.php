@@ -1,9 +1,13 @@
 <div class="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
     @forelse ($sectionProducts as $product)
         @php
-            $image = $product->media->first(
-                fn ($media) => $media->type === 'image'
-            );
+            $storage = \Illuminate\Support\Facades\Storage::disk('public');
+
+            $image = $product->media
+              ->first(function ($media) use ($storage) {
+                  return $media->type === 'image'
+                      && $storage->exists($media->path);
+              });
         @endphp
 
         <article class="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition hover:shadow-md">
@@ -14,7 +18,7 @@
                 <div class="aspect-square overflow-hidden bg-gray-100">
                     @if ($image)
                         <img
-                            src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($image->path) }}"
+                            src="{{ $storage->url($image->path) }}"
                             alt="{{ $product->name }}"
                             class="h-full w-full object-cover"
                             loading="lazy">

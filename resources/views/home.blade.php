@@ -44,33 +44,51 @@
 
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
 
-                @for ($i = 1; $i <= 4; $i++)
-                    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                @forelse ($latestProducts as $product)
+                    <a
+                        href="{{ route('products.show', $product->id) }}"
+                        class="bg-white rounded-lg shadow-sm overflow-hidden block hover:shadow-md transition"
+                    >
+                        <!-- 商品圖片 -->
+                        <div class="aspect-square bg-gray-100 flex items-center justify-center overflow-hidden">
+                            @php
+                                $storage = \Illuminate\Support\Facades\Storage::disk('public');
+                                $image = $product->media->first(
+                                    function ($media) use ($storage) {
+                                        return $media->type === 'image'
+                                            && $storage->exists($media->path);
+                                    }
+                                );
+                            @endphp
 
-                        <!-- 商品圖片佔位 -->
-                        <div class="aspect-square bg-gray-200 flex items-center justify-center">
-                            <span class="text-gray-400">
-                                商品圖片
-                            </span>
+                            @if ($image)
+                                <img
+                                    src="{{ $storage->url($image->path) }}"
+                                    alt="{{ $product->name }}"
+                                    class="h-full w-full object-cover"
+                                    loading="lazy"
+                                >
+                            @else
+                               <span class="text-gray-400">暫無商品圖片</span>
+                            @endif
                         </div>
 
                         <!-- 商品資訊 -->
                         <div class="p-4">
-                            <h3 class="font-semibold text-gray-900">
-                                新品商品 {{ $i }}
+                            <h3 class="font-semibold text-gray-900 line-clamp-2">
+                                {{ $product->name }}
                             </h3>
 
-                            <p class="mt-2 text-sm text-gray-500">
-                                商品簡短介紹
-                            </p>
-
                             <p class="mt-3 font-bold text-gray-900">
-                                ${{ 299 + ($i * 100) }}
+                               ${{ number_format((float) $product->price, 0) }}
                             </p>
                         </div>
-
+                    </a>
+                @empty
+                    <div class="col-span-full py-8 text-center text-gray-500">
+                        目前沒有新品上架
                     </div>
-                @endfor
+                @endforelse
 
             </div>
 
@@ -86,34 +104,54 @@
 
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
 
-                @for ($i = 1; $i <= 8; $i++)
-                    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                @forelse ($recommendedProducts as $product)
+            <a
+                href="{{ route('products.show', $product->id) }}"
+                class="bg-white rounded-lg shadow-sm overflow-hidden block hover:shadow-md transition"
+            >
+                <div class="aspect-square bg-gray-100 flex items-center justify-center overflow-hidden">
+                    @php
+                        $storage = \Illuminate\Support\Facades\Storage::disk('public');
 
-                        <!-- 商品圖片佔位 -->
-                        <div class="aspect-square bg-gray-200 flex items-center justify-center">
-                            <span class="text-gray-400">
-                                商品圖片
-                            </span>
-                        </div>
+                        $image = $product->media->first(
+                            function ($media) use ($storage) {
+                                return $media->type === 'image'
+                                    && $storage->exists($media->path);
+                            }
+                        );
+                    @endphp
 
-                        <!-- 商品資訊 -->
-                        <div class="p-4">
-                            <h3 class="font-semibold text-gray-900">
-                                推薦商品 {{ $i }}
-                            </h3>
+                    @if ($image)
+                        <img
+                            src="{{ $storage->url($image->path) }}"
+                            alt="{{ $product->name }}"
+                            class="h-full w-full object-cover"
+                            loading="lazy"
+                        >
+                    @else
+                        <span class="text-gray-400">暫無商品圖片</span>
+                    @endif
+                </div>
 
-                            <p class="mt-2 text-sm text-gray-500">
-                                商品簡短介紹
-                            </p>
+                <div class="p-4">
+                    <h3 class="font-semibold text-gray-900 line-clamp-2">
+                        {{ $product->name }}
+                    </h3>
 
-                            <p class="mt-3 font-bold text-gray-900">
-                                ${{ 399 + ($i * 100) }}
-                            </p>
-                        </div>
+                    <p class="mt-3 font-bold text-gray-900">
+                        ${{ number_format((float) $product->price, 0) }}
+                    </p>
 
+                    <p class="mt-2 text-sm text-gray-500">
+                        ♥ {{ $product->likes_count }} 個讚
+                    </p>
+                </div>
+            </a>
+                @empty
+                    <div class="col-span-full py-8 text-center text-gray-500">
+                        目前沒有推薦商品
                     </div>
-                @endfor
-
+                @endforelse
             </div>
 
         </section>
