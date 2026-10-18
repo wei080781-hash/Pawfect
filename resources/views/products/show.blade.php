@@ -127,12 +127,21 @@
                     </h2>
 
                     @php
-                        $video = $product->media->firstWhere('type', 'video');
-                        $images = $product->media->where('type', 'image');
+                        $media = $product->media;
+                        $video = $media->firstWhere('type', 'video');
+                        $images = $media->where('type', 'image');
+
+                        $storage = \Illuminate\Support\Facades\Storage::disk('public');
+
+                        $videoExists = $video && $storage->exists($video->path);
+
+                        $existingImages = $images->filter(
+                            fn ($image) => $storage->exists($image->path)
+                        );
                     @endphp
 
-                    {{-- 商品影片 --}}
-                    @if($video)
+                    {{-- 商品影片：只有實際檔案存在才顯示播放器 --}}
+                    @if($videoExists)
                         <div class="mb-6">
                             <video
                                 controls
@@ -140,7 +149,7 @@
                                 class="w-full max-h-[480px] rounded-lg bg-black"
                             >
                                 <source
-                                    src="{{ asset('storage/' . $video->path) }}"
+                                    src="{{ $storage->url($video->path) }}"
                                     type="video/mp4"
                                 >
                                 您的瀏覽器不支援影片播放。
@@ -148,21 +157,26 @@
                         </div>
                     @endif
 
-                    {{-- 商品圖片：直向排列 --}}
-                    @if($images->isNotEmpty())
-                        <div class="mb-6">
+                    {{-- 商品圖片：只顯示實際存在的圖片 --}}
+                    <div class="mb-6">
+                        @if($existingImages->isNotEmpty())
                             <div class="flex flex-col gap-4">
-                                @foreach($images as $image)
+                                @foreach($existingImages as $image)
                                     <img
-                                        src="{{ asset('storage/' . $image->path) }}"
+                                        src="{{ $storage->url($image->path) }}"
                                         alt="{{ $product->name }}"
                                         class="w-full rounded-lg object-contain bg-gray-50"
                                         loading="lazy"
                                     >
                                 @endforeach
                             </div>
-                        </div>
-                    @endif
+                        @else
+                            <div class="flex min-h-40 items-center justify-center rounded-lg bg-gray-100 text-gray-500">
+                                暫無商品圖片
+                            </div>
+                        @endif
+                    </div>
+
 
                     {{-- 商品介紹文字 --}}
                     <div>

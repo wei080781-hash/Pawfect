@@ -10,8 +10,34 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\BannerController;
 
 Route::get('/', [HomeController::class, 'index']) ->name('home');
+ // 首頁輪播圖管理（僅限指定帳號）
+Route::middleware(['auth', 'banner.manager'])
+    ->prefix('admin/banners')
+    ->name('admin.banners.')
+    ->group(function () {
+        // 輪播圖列表
+        Route::get('/', [BannerController::class, 'index'])
+            ->name('index');
+        // 新增輪播圖表單
+        Route::get('/create', [BannerController::class, 'create'])
+            ->name('create');
+        // 儲存新輪播圖
+        Route::post('/', [BannerController::class, 'store'])
+            ->name('store');
+        // 編輯輪播圖表單
+        Route::get('/{banner}/edit', [BannerController::class, 'edit'])
+            ->name('edit');
+        // 更新輪播圖
+        Route::put('/{banner}', [BannerController::class, 'update'])
+            ->name('update');
+        // 刪除輪播圖
+        Route::delete('/{banner}', [BannerController::class, 'destroy'])
+            ->name('destroy');
+    });
+
 
 Route::get('/about', function () {
     return view('pages.about');
