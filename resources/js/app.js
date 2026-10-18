@@ -34,6 +34,112 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    
+    
+   
+    // 首頁輪播切換
+    const bannerSlides = Array.from(
+        document.querySelectorAll('[data-banner-slide]')
+    );
+
+    if (bannerSlides.length > 0) {
+        const bannerSection = bannerSlides[0].closest('section');
+
+        const prevButton = bannerSection?.querySelector(
+            'button[aria-label="上一張"]'
+        );
+
+        const nextButton = bannerSection?.querySelector(
+            'button[aria-label="下一張"]'
+        );
+
+        let currentIndex = 0;
+        let isAnimating = false;
+        const animationDuration = 700;
+        const autoPlayInterval = 5000;
+
+        // 設定初始位置。
+        bannerSlides.forEach((slide, index) => {
+            slide.style.transition = 'none';
+            slide.style.transform =
+                index === 0
+                    ? 'translateX(0%)'
+                    : 'translateX(100%)';
+        });
+
+        const showBanner = (nextIndex, direction) => {
+            if (
+                bannerSlides.length <= 1 ||
+                isAnimating ||
+                nextIndex === currentIndex
+            ) {
+                return;
+            }
+
+            const currentSlide = bannerSlides[currentIndex];
+            const nextSlide = bannerSlides[nextIndex];
+
+            // 設定新圖片的進場位置。
+            nextSlide.style.transition = 'none';
+            nextSlide.style.transform =
+                `translateX(${direction * 100}%)`;
+
+            // 確保瀏覽器套用起始位置。
+            void nextSlide.offsetWidth;
+
+            currentSlide.style.transition =
+                `transform ${animationDuration}ms ease-in-out`;
+            nextSlide.style.transition =
+                `transform ${animationDuration}ms ease-in-out`;
+
+            isAnimating = true;
+
+            currentSlide.style.transform =
+                `translateX(${-direction * 100}%)`;
+            nextSlide.style.transform = 'translateX(0%)';
+
+            currentIndex = nextIndex;
+
+            window.setTimeout(() => {
+                isAnimating = false;
+            }, animationDuration);
+        };
+
+        if (bannerSlides.length <= 1) {
+            prevButton?.classList.add('hidden');
+            nextButton?.classList.add('hidden');
+        } else {
+            prevButton?.addEventListener('click', () => {
+                const previousIndex =
+                    (currentIndex - 1 + bannerSlides.length) %
+                    bannerSlides.length;
+
+                showBanner(previousIndex, -1);
+            });
+
+            nextButton?.addEventListener('click', () => {
+                const nextIndex =
+                    (currentIndex + 1) % bannerSlides.length;
+
+                showBanner(nextIndex, 1);
+            });
+
+            // 每 3 秒自動切換至下一張。
+            window.setInterval(() => {
+                if (isAnimating) {
+                    return;
+                }
+
+                const nextIndex =
+                    (currentIndex + 1) % bannerSlides.length;
+
+                showBanner(nextIndex, 1);
+            }, autoPlayInterval);
+        }
+    }
+
+
+
 
     // 分類浮動選單
     const openCategoryButton = document.getElementById('open-category-panel');

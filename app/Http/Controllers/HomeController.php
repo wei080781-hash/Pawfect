@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Banner;
 use App\Models\Category;
 use App\Models\Product;
 
@@ -9,6 +10,12 @@ class HomeController extends Controller
 {
     public function index()
     {
+        $banners = Banner::query()
+        ->where('status', true)
+        ->orderBy('sort_order')
+        ->orderBy('id')
+        ->get();
+
         $categories = Category::with('children')
             ->whereNull('parent_id')
             ->where('status', true)
@@ -36,6 +43,7 @@ class HomeController extends Controller
             ->get();
 
         return view('home', [
+            'banners' => $banners,
             'categories' => $categories,
             'latestProducts' => $latestProducts,
             'recommendedProducts' => $recommendedProducts,

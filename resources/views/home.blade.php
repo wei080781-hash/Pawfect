@@ -3,36 +3,69 @@
     <!-- 首頁內容 -->
     <div class="pb-24">
 
+        
+        
+        
         <!-- 輪播 Banner -->
-        <section class="w-full">
-            <div class="relative h-[500px] bg-gray-200 flex items-center justify-center">
-                <span class="text-2xl font-semibold text-gray-500">
-                    輪播 Banner
-                </span>
+        <section class="w-full bg-gray-100 py-6">
+            <div class="relative h-[280px] w-full overflow-hidden bg-gray-200 sm:h-[380px] lg:h-[460px]">
 
-                <!-- 左右切換按鈕：目前只有畫面 -->
+                @forelse ($banners as $banner)
+                    <div
+                        class="absolute inset-0 flex items-center justify-center transition-transform duration-700 ease-in-out"
+                        data-banner-slide
+                        style="transform: translateX({{ $loop->first ? '0%' : '100%' }});"
+                    >
+                        @if ($banner->link_url)
+                            <a
+                                href="{{ $banner->link_url }}"
+                                class="flex h-full w-full items-center justify-center"
+                                aria-label="{{ $banner->title }}"
+                            >
+                                <img
+                                    src="{{ asset('storage/' . $banner->image_path) }}"
+                                    alt="{{ $banner->title }}"
+                                    class="h-full w-full object-contain"
+                                >
+                            </a>
+                        @else
+                            <img
+                                src="{{ asset('storage/' . $banner->image_path) }}"
+                                alt="{{ $banner->title }}"
+                                class="h-full w-full object-contain"
+                            >
+                        @endif
+                    </div>
+                @empty
+                    <div class="flex h-full items-center justify-center">
+                        <span class="text-lg font-semibold text-gray-500">
+                            目前沒有啟用的輪播圖片
+                        </span>
+                    </div>
+                @endforelse
+
+                <!-- 左側箭頭：外框內側 -->
                 <button
                     type="button"
-                    class="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white shadow flex items-center justify-center text-gray-600"
+                    class="absolute left-4 top-1/2 z-20 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-gray-700 shadow-md hover:bg-white sm:left-6 sm:h-12 sm:w-12"
+                    aria-label="上一張"
                 >
-                    ‹
+                    <span class="text-3xl leading-none">‹</span>
                 </button>
 
+                <!-- 右側箭頭：外框內側 -->
                 <button
                     type="button"
-                    class="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white shadow flex items-center justify-center text-gray-600"
+                    class="absolute right-4 top-1/2 z-20 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-gray-700 shadow-md hover:bg-white sm:right-6 sm:h-12 sm:w-12"
+                    aria-label="下一張"
                 >
-                    ›
+                    <span class="text-3xl leading-none">›</span>
                 </button>
 
-                <!-- Banner 圓點 -->
-                <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
-                    <span class="w-2 h-2 rounded-full bg-gray-800"></span>
-                    <span class="w-2 h-2 rounded-full bg-gray-400"></span>
-                    <span class="w-2 h-2 rounded-full bg-gray-400"></span>
-                </div>
             </div>
         </section>
+
+
 
 
         <!-- 新品上架 -->

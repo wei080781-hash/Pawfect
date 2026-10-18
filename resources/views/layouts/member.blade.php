@@ -165,6 +165,21 @@
 
                     </a>
 
+                    {{-- 輪播圖管理：僅指定帳號可見 --}}
+                    @if (auth()->check() && auth()->user()->email === 'wei.dev.tw@gmail.com')
+                        <a
+                            href="{{ route('admin.banners.index') }}"
+                            class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 transition
+                            {{ request()->routeIs('admin.banners.*') ? 'bg-gray-100 font-semibold text-gray-900' : '' }}"
+                        >
+                            <span class="text-lg">🖼️</span>
+                    
+                            <span class="member-sidebar-text whitespace-nowrap">
+                                輪播圖管理
+                            </span>
+                        </a>
+                    @endif
+
                     <!-- 登出 -->
 
                     <form
